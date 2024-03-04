@@ -1,0 +1,27 @@
+# C/C++ generated
+*.a
+*.ax
+*.d
+*.dll
+*.lib
+*.lo
+*.o
+*.os
+*.ox
+*.Plo
+*.so
+*.obj
+
+# Python generated
+__pycache__/
+*.pyc
+
+# Scons generated
+*.dblite
+*.cache
+
+# CMake generated
+build
+
+# manually added
+*.bak

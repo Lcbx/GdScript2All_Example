@@ -1,0 +1,1 @@
+../Godot4Sharp/godot.windows.editor.x86_64.mono.exe ./demo/project.godot
