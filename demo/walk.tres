@@ -1,0 +1,6 @@
+[gd_resource type="MovementState" format=3 uid="uid://c41niw4g7jih6"]
+
+[resource]
+acceleration = 3.0
+nimbleness = 3.0
+top_speed = 3.0

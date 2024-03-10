@@ -7,6 +7,8 @@
 #include <godot_cpp/core/defs.hpp>
 #include <godot_cpp/godot.hpp>
 
+#include "g2All_generated/example_MovementState.hpp"
+#include "g2All_generated/example_controller.hpp"
 #include "gdReshade.hpp"
 
 
@@ -17,6 +19,9 @@ const ModuleInitializationLevel INITIALISATION_LEVEL = ModuleInitializationLevel
 void initialize_gd2AllTest(ModuleInitializationLevel p_level) {
 	if(p_level != INITIALISATION_LEVEL) return;
 	ClassDB::register_abstract_class<gd2AllTest>(); // to not allow instancing
+	
+	ClassDB::register_class<MovementState>();
+	ClassDB::register_class<Character>();
 }
 
 void uninitialize_gd2AllTest(ModuleInitializationLevel p_level) {

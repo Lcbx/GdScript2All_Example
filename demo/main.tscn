@@ -1,6 +1,129 @@
-[gd_scene load_steps=2 format=3 uid="uid://clkk1lp5387n2"]
+[gd_scene load_steps=9 format=3 uid="uid://clkk1lp5387n2"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_7l3et"]
+[ext_resource type="MovementState" uid="uid://daxjw78ahv32f" path="res://crouch.tres" id="2_y03lf"]
+[ext_resource type="MovementState" uid="uid://c41niw4g7jih6" path="res://walk.tres" id="3_gd3lv"]
+[ext_resource type="MovementState" uid="uid://rim53b2pf4se" path="res://run.tres" id="4_c4tgs"]
+[ext_resource type="MovementState" uid="uid://dx4u3lok8tknh" path="res://fall.tres" id="5_m65h5"]
+
+[sub_resource type="GDScript" id="GDScript_r7fcu"]
+script/source = "extends CanvasLayer
+
+@export var Player : Character
+
+# TODO:
+# * handle input remapping (lotsof examples / addons)
+# * support toggles for running / crouching 
+
+
+# Input Actions
+var forward_action = \"ui_up\"
+var backward_action = \"ui_down\"
+var left_action = \"ui_left\"
+var right_action = \"ui_right\"
+var up_action = \"ui_page_up\"
+var crouch_action = \"crouch\"
+var run_action = \"run\"
+var gui_action = \"ui_cancel\"
+var jump_action = \"jump\"
+var left_click = \"left_click\"
+var right_click = \"right_click\"
+var reload = \"reload\"
+var switch_mainArm = \"switch_mainArm\"
+var switch_sideArm = \"switch_sideArm\"
+
+@onready var pause_mode : bool :
+	set(value):
+		pause_mode = value
+		get_tree().paused = pause_mode
+		for child in get_children(): child.pause_mode = pause_mode
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE if pause_mode else Input.MOUSE_MODE_CAPTURED)
+
+func _ready():
+	pause_mode = false
+
+# TODO : use a handler system
+# a variable (handler) is the system currently in charge of receiving input
+# Ex : the player, augment menu, setting menu, etc
+func _input(event):
+	if Input.is_action_just_pressed(gui_action):
+		pause_mode = not pause_mode
+	elif not pause_mode:
+		if event is InputEventMouseMotion:
+			var view_offset : Vector2 = event.relative * .1
+			var pView : Vector3 = Player.get_view_dir()
+			pView.y -= view_offset.x
+			pView.x -= view_offset.y
+			Player.set_view_dir(pView)
+		#if event.is_action_pressed(switch_mainArm):
+			#Player.useMainArmCommand()
+		#elif event.is_action_pressed(switch_sideArm):
+			#Player.useSideArmCommand()
+		#elif event is InputEventMouseButton:
+			#if event.is_action_pressed(left_click):
+				#Player.shootCommand()
+			#elif event.is_action_released(left_click):
+				#Player.stopShootingCommand()
+			#elif event.is_action_pressed(right_click):
+				#Player.aimCommand()
+			#elif event.is_action_released(right_click):
+				#Player.stopAimingCommand()
+		elif event is InputEventKey:
+			var key : InputEventKey = event
+			if key.is_action_pressed(run_action):
+				Player.wantedMovement = Character.MovementEnum.run
+			elif event.is_action_released(run_action):
+				Player.wantedMovement = Character.MovementEnum.walk
+			if event.is_action_pressed(crouch_action):
+				Player.wantedMovement = Character.MovementEnum.crouch
+			elif event.is_action_released(crouch_action):
+				Player.wantedMovement = Character.MovementEnum.walk
+			#if event.is_action_pressed(jump_action):
+				#Player.jumpCommand()
+			#elif event.is_action_released(jump_action):
+				#Player.jumpStopCommand()
+			#if event.is_action_pressed(reload):
+				#Player.reloadCommand()
+		
+		var xz = Input.get_vector(left_action, right_action, backward_action, forward_action, -1.0 ).normalized()
+		
+		var y : float = \\
+				  1. if Input.is_action_pressed(jump_action) \\
+			else -1. if Input.is_action_pressed(crouch_action) \\
+			else 0.
+		
+		Player.set_local_dir(Vector3( xz.x, y,  xz.y))
+"
+
+[sub_resource type="BoxMesh" id="BoxMesh_nspda"]
+size = Vector3(10, 10, 10)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_03ge7"]
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1_7l3et")
+
+[node name="HUD" type="CanvasLayer" parent="." node_paths=PackedStringArray("Player")]
+script = SubResource("GDScript_r7fcu")
+Player = NodePath("../Character")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="."]
+use_collision = true
+size = Vector3(1000, 1, 1000)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 20, 0)
+mesh = SubResource("BoxMesh_nspda")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.722641, 0.575674, -0.382607, 0.691223, -0.601841, 0.399998, 0, -0.553522, -0.832834, 0, 200.887, 0)
+
+[node name="Character" type="Character" parent="."]
+movements = [ExtResource("2_y03lf"), ExtResource("3_gd3lv"), ExtResource("4_c4tgs"), ExtResource("5_m65h5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.49956, -30)
+
+[node name="Camera3D" type="Camera3D" parent="Character"]
+transform = Transform3D(-0.999956, -4.65641e-10, -0.00935484, 0.00434809, 0.885418, -0.464775, 0.00828295, -0.464796, -0.885379, 0, 3.00304, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Character"]
+shape = SubResource("CapsuleShape3D_03ge7")

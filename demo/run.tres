@@ -1,0 +1,6 @@
+[gd_resource type="MovementState" format=3 uid="uid://rim53b2pf4se"]
+
+[resource]
+acceleration = 5.0
+nimbleness = 3.0
+top_speed = 10.0

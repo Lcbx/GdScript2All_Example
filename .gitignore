@@ -25,3 +25,6 @@ build
 
 # manually added
 *.bak
+
+# godot cpp
+godot-cpp/**

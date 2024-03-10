@@ -1,0 +1,4 @@
+[gd_resource type="MovementState" format=3 uid="uid://dx4u3lok8tknh"]
+
+[resource]
+top_speed = 3.0
