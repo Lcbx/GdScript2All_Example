@@ -1,15 +1,16 @@
-[gd_scene load_steps=9 format=3 uid="uid://clkk1lp5387n2"]
+[gd_scene load_steps=10 format=3 uid="uid://gq3gxdfh50d5"]
 
-[ext_resource type="Script" path="res://main.gd" id="1_7l3et"]
-[ext_resource type="MovementState" uid="uid://daxjw78ahv32f" path="res://crouch.tres" id="2_y03lf"]
-[ext_resource type="MovementState" uid="uid://c41niw4g7jih6" path="res://walk.tres" id="3_gd3lv"]
-[ext_resource type="MovementState" uid="uid://rim53b2pf4se" path="res://run.tres" id="4_c4tgs"]
-[ext_resource type="MovementState" uid="uid://dx4u3lok8tknh" path="res://fall.tres" id="5_m65h5"]
+[ext_resource type="Script" path="res://main.gd" id="1_6ol50"]
+[ext_resource type="Resource" uid="uid://bni458rhg0dsa" path="res://Csharp/crouch.tres" id="3_qgryf"]
+[ext_resource type="Resource" uid="uid://55jx787cxvfh" path="res://Csharp/walk.tres" id="4_1ulew"]
+[ext_resource type="Resource" uid="uid://cpwd17eyo5x8d" path="res://Csharp/run.tres" id="5_s2qr7"]
+[ext_resource type="Script" path="res://Csharp/Character2.cs" id="6_gpw43"]
+[ext_resource type="Resource" uid="uid://h5n03gneakff" path="res://Csharp/fall.tres" id="6_uqvnn"]
 
 [sub_resource type="GDScript" id="GDScript_r7fcu"]
 script/source = "extends CanvasLayer
 
-@export var Player : Character
+@export var Player : Character2
 
 # TODO:
 # * handle input remapping (lotsof examples / addons)
@@ -51,39 +52,24 @@ func _input(event):
 	elif not pause_mode:
 		if event is InputEventMouseMotion:
 			var view_offset : Vector2 = event.relative * .1
-			var pView : Vector3 = Player.get_view_dir()
+			var pView : Vector3 = Player.ViewDir
 			pView.y -= view_offset.x
 			pView.x -= view_offset.y
-			Player.set_view_dir(pView)
-		#if event.is_action_pressed(switch_mainArm):
-			#Player.useMainArmCommand()
-		#elif event.is_action_pressed(switch_sideArm):
-			#Player.useSideArmCommand()
-		#elif event is InputEventMouseButton:
-			#if event.is_action_pressed(left_click):
-				#Player.shootCommand()
-			#elif event.is_action_released(left_click):
-				#Player.stopShootingCommand()
-			#elif event.is_action_pressed(right_click):
-				#Player.aimCommand()
-			#elif event.is_action_released(right_click):
-				#Player.stopAimingCommand()
+			Player.ViewDir = pView
 		elif event is InputEventKey:
 			var key : InputEventKey = event
 			if key.is_action_pressed(run_action):
-				Player.wantedMovement = Character.MovementEnum.run
+				Player.WantedMovement = Character.MovementEnum.run
 			elif event.is_action_released(run_action):
-				Player.wantedMovement = Character.MovementEnum.walk
+				Player.WantedMovement = Character.MovementEnum.walk
 			if event.is_action_pressed(crouch_action):
-				Player.wantedMovement = Character.MovementEnum.crouch
+				Player.WantedMovement = Character.MovementEnum.crouch
 			elif event.is_action_released(crouch_action):
-				Player.wantedMovement = Character.MovementEnum.walk
+				Player.WantedMovement = Character.MovementEnum.walk
 			#if event.is_action_pressed(jump_action):
 				#Player.jumpCommand()
 			#elif event.is_action_released(jump_action):
 				#Player.jumpStopCommand()
-			#if event.is_action_pressed(reload):
-				#Player.reloadCommand()
 		
 		var xz = Input.get_vector(left_action, right_action, backward_action, forward_action, -1.0 ).normalized()
 		
@@ -92,7 +78,7 @@ func _input(event):
 			else -1. if Input.is_action_pressed(crouch_action) \\
 			else 0.
 		
-		Player.set_local_dir(Vector3( xz.x, y,  xz.y))
+		Player.LocalDir = Vector3( xz.x, y,  xz.y)
 "
 
 [sub_resource type="BoxMesh" id="BoxMesh_nspda"]
@@ -101,11 +87,10 @@ size = Vector3(10, 10, 10)
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_03ge7"]
 
 [node name="Main" type="Node3D"]
-script = ExtResource("1_7l3et")
+script = ExtResource("1_6ol50")
 
-[node name="HUD" type="CanvasLayer" parent="." node_paths=PackedStringArray("Player")]
+[node name="HUD" type="CanvasLayer" parent="."]
 script = SubResource("GDScript_r7fcu")
-Player = NodePath("../Character")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
 use_collision = true
@@ -118,12 +103,13 @@ mesh = SubResource("BoxMesh_nspda")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.722641, 0.575674, -0.382607, 0.691223, -0.601841, 0.399998, 0, -0.553522, -0.832834, 0, 200.887, 0)
 
-[node name="Character" type="Character" parent="."]
-movements = [ExtResource("2_y03lf"), ExtResource("3_gd3lv"), ExtResource("4_c4tgs"), ExtResource("5_m65h5")]
+[node name="CharacterBody3D" type="CharacterBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.49956, -30)
+script = ExtResource("6_gpw43")
+Movements = Array[Resource]([ExtResource("3_qgryf"), ExtResource("4_1ulew"), ExtResource("5_s2qr7"), ExtResource("6_uqvnn")])
 
-[node name="Camera3D" type="Camera3D" parent="Character"]
+[node name="Camera3D" type="Camera3D" parent="CharacterBody3D"]
 transform = Transform3D(-0.999956, -4.65641e-10, -0.00935484, 0.00434809, 0.885418, -0.464775, 0.00828295, -0.464796, -0.885379, 0, 3.00304, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Character"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D"]
 shape = SubResource("CapsuleShape3D_03ge7")

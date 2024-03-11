@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="MovementState2" load_steps=2 format=3 uid="uid://bni458rhg0dsa"]
+
+[ext_resource type="Script" path="res://Csharp/MovementState2.cs" id="1_y0bh3"]
+
+[resource]
+script = ExtResource("1_y0bh3")
+Acceleration = 3.0
+Nimbleness = 3.0
+TopSpeed = 3.0
