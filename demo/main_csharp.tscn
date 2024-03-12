@@ -10,12 +10,16 @@
 [sub_resource type="GDScript" id="GDScript_r7fcu"]
 script/source = "extends CanvasLayer
 
-@export var Player : Character2
+@export var _player : CharacterBody3D :
+	set(val): Player = val
+
+# for some reason inspector does not allow setting exported Player if custom class now
+#@export
+var Player : Character2
 
 # TODO:
 # * handle input remapping (lotsof examples / addons)
-# * support toggles for running / crouching 
-
+# * support toggles for running / crouching
 
 # Input Actions
 var forward_action = \"ui_up\"
@@ -89,8 +93,9 @@ size = Vector3(10, 10, 10)
 [node name="Main" type="Node3D"]
 script = ExtResource("1_6ol50")
 
-[node name="HUD" type="CanvasLayer" parent="."]
+[node name="HUD" type="CanvasLayer" parent="." node_paths=PackedStringArray("_player")]
 script = SubResource("GDScript_r7fcu")
+_player = NodePath("../CharacterBody3D")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
 use_collision = true

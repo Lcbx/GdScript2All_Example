@@ -29,7 +29,7 @@ public partial class Character2 : Godot.CharacterBody3D
 	public static readonly Vector3 XY = new Vector3(1.0f, 1.0f, 0.0f);
 	public static readonly Vector3 YZ = new Vector3(0.0f, 1.0f, 1.0f);
 
-	public static double Gravity =  (double)Godot.ProjectSettings.GetSetting("physics/3d/default_gravity");
+	public static double Gravity = (double)Godot.ProjectSettings.GetSetting("physics/3d/default_gravity");
 
 	public Godot.Timer CoyoteTime = new Timer();
 	public Godot.Timer JumpCoolDown = new Timer();
